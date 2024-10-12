@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Singularity Black Holes</title>
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-image: url('Milkyway/observable.webp');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        .info-box {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            display: none;
+            z-index: 10;
+            max-width: 400px;
+            word-wrap: break-word;
+        }
+        img {
+            height: auto;
+            margin: 5px 0;
+            border-radius: 8px;
+        }
+        .credits {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            color: white;
+            font-size: 14px;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 5px;
+            border-radius: 5px;
+        }
+        .credits a {
+            color: #FFD700; /* Change the link color if desired */
+            text-decoration: none;
+        }
+        .credits a:hover {
+            text-decoration: underline; /* Add hover effect for the link */
+        }
+        .disclaimer {
+            position: absolute;
+            bottom: 50px; /* Adjust this if needed to space it from the credits */
+            right: 20px;
+            color: white;
+            font-size: 12px;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 5px;
+            border-radius: 5px;
+            text-align: center;
+        }   
+    </style>
+</head>
+
+<body>
+    <div class="disclaimer">
+        *Distances and other information are approximate and not accurate.
+    </div>
+    <div class="credits">
+        © Kurzgesagt - <a href="https://www.youtube.com/@kurzgesagt" target="_blank">Visit their channel</a>
+    </div>
+    <div id="info" class="info-box"></div>
+    <script>
+        const blackHoles = [
+            { name: "Cygnus A", mass: "2.5 billion", fact: "Can cover the whole solar system", img: "Milkyway/Cygnus%20A%20-%202.5%20billion%20-%20could%20cover%20the%20whole%20solar%20system.png", sizeFactor: 6, x: 0.1, y: 0.2 },
+            { name: "GW170817", mass: "2.7 billion", fact: "Can cover Paris", img: "Milkyway/GW170817%20-%202.7%20-%20can%20cover%20Paris.png", sizeFactor: 8, x: 0.25, y: 0.6 },
+            { name: "M33X7", mass: "15.65 million", fact: "Can cover Corsica", img: "Milkyway/M33X7%20-%2015.65%20-can%20cover%20Corsica.png", sizeFactor: 3, x: 0.45, y: 0.4 },
+            { name: "Messier 87 black hole", mass: "6.5 billion", fact: "First-ever spotted black hole to mankind", img: "Milkyway/Messier%2087%20black%20hole%20-%206.5%20billion%20-%20first%20ever%20spotted%20black%20hole%20to%20mankind.png", sizeFactor: 12, x: 0.6, y: 0.8 },
+            { name: "OJ287", mass: "18 billion", fact: "Could easily fit 3+ solar systems inside of it and devouring galaxies worth of matter", img: "Milkyway/OJ287%20-%2018%20billion%20-%20could%20easily%20fit%203%2B%20solar%20systems%20inside%20of%20it.png", sizeFactor: 22, x: 0.05, y: 0.3 },
+            { name: "Sagittarius A*", mass: "4 million", fact: "At the Center of Milkyway", img: "Milkyway/Sagittarius%20A*%20-%204%20Million%20-At%20the%20Center%20of%20Milkyway.png", sizeFactor: 2, x: 0.5, y: 0.5 },
+            { name: "TON618", mass: "66 billion", fact: "Largest spotted black hole aka king of the black holes", img: "Milkyway/TON618%20-%2066%20billion%20-%20largest%20spotted%20blackhole.png", sizeFactor: 27, x: 0.09, y: 0.7 }
+        ];
+
+        const infoBox = document.getElementById('info');
+        const proximityThreshold = 0.12;
+
+        document.addEventListener('mousemove', (event) => {
+            const { clientX, clientY } = event;
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            let showInfo = false;
+
+            for (const blackHole of blackHoles) {
+                const blackHoleX = blackHole.x * width;
+                const blackHoleY = blackHole.y * height;
+                const distance = Math.sqrt(Math.pow(clientX - blackHoleX, 2) + Math.pow(clientY - blackHoleY, 2));
+
+                if (distance < proximityThreshold * Math.min(width, height)) {
+                    infoBox.innerHTML = `
+                        <strong>${blackHole.name}</strong><br>
+                        Mass: ${blackHole.mass} solar masses<br>
+                        Fact: ${blackHole.fact}<br>
+                        <img src="${blackHole.img}" alt="${blackHole.name} Image" style="width: ${blackHole.sizeFactor * 50}px;">
+                    `;
+
+                    // Determine side for info box based on position
+                    let boxX = blackHoleX > width / 2 ? clientX - infoBox.offsetWidth - 15 : clientX + 15;
+                    let boxY = clientY + 15;
+
+                    // Adjust horizontal position if the info box goes out of bounds
+                    if (boxX < 0) {
+                        boxX = 15; // Keep a margin from the left edge
+                    } else if (boxX + infoBox.offsetWidth > width) {
+                        boxX = width - infoBox.offsetWidth - 15; // Keep a margin from the right edge
+                    }
+
+                    // Adjust vertical position if necessary
+                    if (boxY + infoBox.offsetHeight > height) {
+                        boxY = height - infoBox.offsetHeight - 15; // Keep a margin from the bottom edge
+                    } else if (boxY < 0) {
+                        boxY = 15; // Keep a margin from the top edge
+                    }
+
+                    infoBox.style.left = `${boxX}px`;
+                    infoBox.style.top = `${boxY}px`;
+                    infoBox.style.display = 'block';
+                    showInfo = true;
+                    break;
+                }
+            }
+
+            if (!showInfo) {
+                infoBox.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
